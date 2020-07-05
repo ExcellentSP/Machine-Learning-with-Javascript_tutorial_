@@ -5,24 +5,25 @@ class LinearRegression {
 		this.features = this.processFeatures(features)
 		this.labels = tf.tensor(labels)
 		this.mseHistory = []
-		// this.bHistory = []
+		this.bHistory = []
 
 		this.options = {
 			learningRate: 0.1,
 			maxIterations: 1000,
+			batchSize: 10,
 			...options,
 		}
 
 		this.weights = tf.zeros([this.features.shape[1], 1])
 	}
 
-	gradientDescent() {
-		const currentGuesses = this.features.matMul(this.weights)
-		const differences = currentGuesses.sub(this.labels)
-		const gradients = this.features
+	gradientDescent(features, labels) {
+		const currentGuesses = features.matMul(this.weights)
+		const differences = currentGuesses.sub(labels)
+		const gradients = features
 			.transpose()
 			.matMul(differences)
-			.div(this.features.shape[0])
+			.div(features.shape[0])
 
 		this.weights = this.weights.sub(
 			gradients.mul(this.options.learningRate)
@@ -46,9 +47,16 @@ class LinearRegression {
 	}
 
 	train() {
+		const batchQuantity = Math.floor(this.features.shape[0] / this.options.batchSize)
 		for (let i = 0; i < this.options.maxIterations; i++) {
-			// this.bHistory.push(this.weights.get(0,0))
-			this.gradientDescent()
+			this.bHistory.push(this.weights.get(0,0))
+			for (let j = 0; j < batchQuantity; j++) {
+				const startIndex = this.options.batchSize * j
+				const featuresSlice = this.features.slice([startIndex, 0], [this.options.batchSize, -1])
+				const labelsSlice = this.labels.slice([startIndex, 0], [this.options.batchSize, -1])
+				this.gradientDescent(featuresSlice, labelsSlice)
+			}
+
 			this.recordMSE()
 			this.updateLearningRate()
 		}
@@ -59,8 +67,6 @@ class LinearRegression {
 		const ttLabels = tf.tensor(testLabels)
 		
 		const predictions = ttFeatures.matMul(this.weights)
-
-		predictions.print()
 		
 		const res = ttLabels.sub(predictions).pow(2).sum().get()
 		const tot = ttLabels.sub(ttLabels.mean()).pow(2).sum().get()
@@ -68,7 +74,10 @@ class LinearRegression {
 		return 1 - (res / tot)
 	}
 
-	predict() {}
+	predict(observations) {
+		const tObs = this.processFeatures(observations)
+		return tObs.matMul(this.weights)
+	}
 
 	processFeatures(features){
 		const tFeatures = tf.tensor(features)

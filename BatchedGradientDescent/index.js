@@ -13,25 +13,29 @@ let { features, labels, testFeatures, testLabels } = loadCSV('./cars.csv', {
 
 const regression = new LinearRegression(features, labels, {
 	learningRate: 0.1,
-	maxIterations: 40,
+	maxIterations: 100,
+	batchSize: 10
 })
 
 regression.train()
 const r2 = regression.test(testFeatures, testLabels)
 
-plot({
-	x: regression.mseHistory.reverse(),
-	xLabel: 'Iteration #',
-	yLabel: 'MSE',
-	name: 'plots/mse-per-iteration'
-})
+// plot({
+// 	x: regression.mseHistory.reverse(),
+// 	xLabel: 'Iteration #',
+// 	yLabel: 'MSE',
+// 	name: 'plots/bgd-mse-per-iteration'
+// })
 
 // plot({
 // 	x: regression.bHistory,
 // 	xLabel: 'B Value',
 // 	y: regression.mseHistory.reverse(),
 // 	yLabel: 'MSE',
-// 	name: 'mse-per-b'
+// 	name: 'plots/bgd-mse-per-b'
 // })
 
 console.log('r2 is: ', r2)
+regression.predict([
+	[180, 80, 1.75]
+]).print()

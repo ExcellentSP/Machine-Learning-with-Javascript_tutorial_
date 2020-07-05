@@ -5,7 +5,7 @@ class LinearRegression {
 		this.features = this.processFeatures(features)
 		this.labels = tf.tensor(labels)
 		this.mseHistory = []
-		// this.bHistory = []
+		this.bHistory = []
 
 		this.options = {
 			learningRate: 0.1,
@@ -47,7 +47,7 @@ class LinearRegression {
 
 	train() {
 		for (let i = 0; i < this.options.maxIterations; i++) {
-			// this.bHistory.push(this.weights.get(0,0))
+			this.bHistory.push(this.weights.get(0,0))
 			this.gradientDescent()
 			this.recordMSE()
 			this.updateLearningRate()
