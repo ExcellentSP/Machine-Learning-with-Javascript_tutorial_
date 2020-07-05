@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"gd": "TF_CPP_MIN_LOG_LEVEL=2 node ./GradientDescent/index.js"
+		"gd": "TF_CPP_MIN_LOG_LEVEL=2 node ./GradientDescent/index.js",
+		"bgd": "TF_CPP_MIN_LOG_LEVEL=2 node ./BatchedGradientDescent/index.js"
 	},
 	"author": "",
 	"license": "ISC",
